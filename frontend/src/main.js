@@ -11,6 +11,12 @@
 // different datasets.
 function initApp(apiUrl) {
   // your app initialisation goes here
+  const root = document.getElementById("root")
+  const yeet = document.createElement("h1")
+  yeet.className="flex-center"
+  yeet.style.fontSize="400px"
+  yeet.textContent="yeet"
+  root.append(yeet)
 }
 
 export default initApp;
