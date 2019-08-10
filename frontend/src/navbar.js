@@ -22,7 +22,7 @@ function buildNavBar () {
     search.setAttribute("placeholder", "Search Seddit")
     search.setAttribute("type", "search")
     search.id="search"
-    
+
     li1.append(search)
     navList.append(li1)
     
@@ -37,7 +37,7 @@ function buildNavBar () {
     navList.append(li2)
     login.addEventListener("click", function() {
         //Go to login form
-        modal.style.display = "block";
+        modal.style.display = "block"
         ShowLoginForm()
         console.log("we loggin in boys")
     })
@@ -53,6 +53,8 @@ function buildNavBar () {
     nav.append(navList)
     signup.addEventListener("click", function() {
         //Go to register form
+        modal.style.display = "block"
+        ShowRegisterForm()
         console.log("we signing up boys")
     })
 }

@@ -18,11 +18,13 @@ function ShowLoginForm() {
 
     const uname = document.createElement("input")
     uname.setAttribute("placeholder", "Username")
-    uname.setAttribute("type", "search")
+    uname.setAttribute("type", "textInput")
+    uname.id="textInput"
 
     const pword = document.createElement("input")
     pword.setAttribute("placeholder", "Password")
-    pword.setAttribute("type", "search")
+    pword.setAttribute("type", "textInput")
+    pword.id="textInput"
     
     const submit = document.createElement("button")
     submit.textContent="Log In"
@@ -55,11 +57,23 @@ function ShowRegisterForm() {
 
     const uname = document.createElement("input")
     uname.setAttribute("placeholder", "Username")
-    uname.setAttribute("type", "search")
+    uname.setAttribute("type", "textInput")
+    uname.id="textInput"
 
     const pword = document.createElement("input")
     pword.setAttribute("placeholder", "Password")
-    pword.setAttribute("type", "search")
+    pword.setAttribute("type", "textInput")
+    pword.id="textInput"
+
+    const email = document.createElement("input")
+    email.setAttribute("placeholder", "Email")
+    email.setAttribute("type", "textInput")
+    email.id="textInput"
+
+    const name = document.createElement("input")
+    name.setAttribute("placeholder", "Name")
+    name.setAttribute("type", "textInput")
+    name.id="textInput"
     
     const submit = document.createElement("button")
     submit.textContent="Log In"
@@ -67,6 +81,8 @@ function ShowRegisterForm() {
 
     form.append(uname)
     form.append(pword)
+    form.append(email)
+    form.append(name)
     form.append(br)
     form.append(submit)
 

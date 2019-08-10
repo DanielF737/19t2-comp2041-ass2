@@ -17,6 +17,8 @@
     outline: none;
     border: 1px solid var(--reddit-grey);
     border-radius: 4px;
+    width: 80%;
+    margin: 5px auto ;
 }
 
 #textInput::placeholder {
