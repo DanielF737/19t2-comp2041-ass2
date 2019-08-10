@@ -1,0 +1,30 @@
+:root {
+    --reddit-blue: #0079D3;
+    --reddit-orange: #FF5700;
+    --reddit-grey: rgba(0, 0, 0, 0.0975);
+    --reddit-light-grey:  rgba(0, 0, 0, 0.041);
+    --reddit-bg-color: #f1f1f7;
+    --body-text-size: 12px;
+    --alt-text-color:  rgba(0, 0, 0, 0.65);
+}
+
+#textInput {
+    background-color: var(--reddit-bg-color);
+    font: inherit;
+    font-size: var(--body-text-size);
+    border: none;
+    padding: 7.5px 15px;
+    outline: none;
+    border: 1px solid var(--reddit-grey);
+    border-radius: 4px;
+}
+
+#textInput::placeholder {
+    letter-spacing: 0.5px;
+    font-size: var(--body-text-size);
+}
+
+#textInput:focus {
+    background-color: white;
+    border-color: var(--reddit-blue);
+}
