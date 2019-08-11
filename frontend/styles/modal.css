@@ -16,14 +16,16 @@
 /* Modal Content */
 .modal-content {
     background-color: #fefefe;
-    padding: 30px;
+    padding: 0px;
     padding-top: 0px;
     border: 1px solid #888;
-    width: 15%;
+    border-radius: 5px;
+    width: 525px;
+    height: 464px;
     position: absolute;
     top: 15%;
     left: 50%;
-    margin-left:-7.5%;
+    margin-left:-262.5px;
 }
   
 /* The Close Button */
@@ -39,4 +41,8 @@
     color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.column {
+    float: left;
 }

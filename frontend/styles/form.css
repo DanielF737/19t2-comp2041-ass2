@@ -8,7 +8,16 @@
     --alt-text-color:  rgba(0, 0, 0, 0.65);
 }
 
-#textInput {
+#loginError {
+    display:none;
+}
+
+.errorText {
+    font-style: italic;
+    color:#FF5700;
+}
+
+.textInput {
     background-color: var(--reddit-bg-color);
     font: inherit;
     font-size: var(--body-text-size);
@@ -18,15 +27,36 @@
     border: 1px solid var(--reddit-grey);
     border-radius: 4px;
     width: 80%;
-    margin: 5px auto ;
+    margin: 10px auto ;
 }
 
-#textInput::placeholder {
+.textInput::placeholder {
     letter-spacing: 0.5px;
     font-size: var(--body-text-size);
 }
 
-#textInput:focus {
+.textInput:focus {
     background-color: white;
     border-color: var(--reddit-blue);
 }
+
+#signUp {
+    color:#0079D3;
+}
+
+#signUp:hover {
+    cursor: pointer;
+}
+
+#sideImage {
+    left: 0;
+    border-radius: 5px 0px 0px 5px ;
+}
+
+.right {
+    width: auto;
+    padding: 20px;
+    width:300px;
+    height:100%;
+}
+

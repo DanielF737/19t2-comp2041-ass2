@@ -11,9 +11,16 @@
 // different datasets.
 function initApp(apiUrl) {
   // your app initialisation goes here
+  localStorage.setItem("apiURL", apiUrl)
+
   const root = document.createElement("div")
   root.id="root"
   document.body.appendChild(root)
+
+  const nav = document.createElement("header")
+  nav.className="banner"
+  nav.id="nav"
+  root.append(nav)
 
   const modal = document.createElement("div")
   modal.id = "myModal"
@@ -29,7 +36,8 @@ function initApp(apiUrl) {
 
   buildFeed()
 
-  buildFooter()
+  //buildFooter()
+
 }
 
 export default initApp;

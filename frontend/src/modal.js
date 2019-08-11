@@ -2,6 +2,8 @@
 function buildModal() {
     const modal = document.getElementById("myModal")
 
+    
+
     const modalContent = document.createElement("div")
     modalContent.className="modal-content"
     const modalHeader = document.createElement("div")
@@ -11,10 +13,18 @@ function buildModal() {
     const modalFooter = document.createElement("div")
     modalFooter.className="modal-footer"
 
+    const leftColumn = document.createElement("div")
+    const rightColumn = document.createElement("div")
+    leftColumn.className=("column left")
+    rightColumn.className=("column right")
+
     modal.append(modalContent)
-    modalContent.append(modalHeader)
-    modalContent.append(modalBody)
-    modalContent.append(modalFooter)
+    modalContent.append(leftColumn)
+    modalContent.append(rightColumn)
+
+    rightColumn.append(modalHeader)
+    rightColumn.append(modalBody)
+    rightColumn.append(modalFooter)
 
     const span = document.createElement("span")
     span.textContent="×";
@@ -23,13 +33,15 @@ function buildModal() {
 
     // When the user clicks on <span> (x), close the modal
     span.addEventListener("click", function() {
-        modal.style.display = "none";
+        closeModal()
+        //modal.style.display = "none";
     })
 
     // When the user clicks anywhere outside of the modal, close it
     window.addEventListener("click", e => {
         if (e.target == modal) {
-            modal.style.display = "none";
+            closeModal()
+            //modal.style.display = "none";
         }
     })
 
@@ -45,4 +57,14 @@ function clearModal() {
     }
 
     buildModal()
+}
+
+function openModal() {
+    const modal = document.getElementById("myModal")
+    modal.style.display = "block"
+}
+
+function closeModal() {
+    const modal = document.getElementById("myModal")
+    modal.style.display = "none"
 }

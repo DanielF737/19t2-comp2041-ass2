@@ -80,6 +80,14 @@ footer {
   border-color: var(--reddit-blue);
 }
 
+#greeting {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--alt-text-color);
+  padding: 7.5px 5px;
+  display: inline;
+}
+
 .button {
   border: 1px solid var(--reddit-blue);
   border-radius: 4px;
@@ -103,6 +111,13 @@ footer > * {
   margin: 10px 25px;  
 }
 
+#nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 .nav {
   list-style-type: none;
   padding: 0;
@@ -121,6 +136,8 @@ footer > * {
   width: 80%;
   margin: 20px auto;
   padding: 0;
+  margin-top: 100px;
+  margin-bottom: 100px;
   z-index: 1000;
 }
 
@@ -135,3 +152,51 @@ footer > * {
 }
 
 /* Add your styles here */
+
+.post{
+
+}
+
+.postImage {
+  max-width: 100%;
+  height:auto;
+  float: left;
+  margin-bottom: 20px;
+}
+
+.vote {
+  text-align: center;
+}
+
+.upvoteButton {
+  max-width: 100%;
+  
+}
+
+.upvoteButton:hover {
+  src: "image/upvoteHover.png"
+}
+
+.commWrap {
+  height:350px;
+  width:115%;
+  left:-30%;
+  overflow-y:auto;
+}
+
+.commList {
+  /*list-style-type: none;*/
+  padding:0px;
+}
+
+.upvWrap {
+  height:350px;
+  width:115%;
+  left:-30%;
+  overflow-y:auto;
+}
+
+.upVList {
+  /*list-style-type: none;*/
+  padding:0px;
+}
