@@ -1,20 +1,26 @@
-export function buildNavBar () {
+import {clearModal, openModal} from "./modal.js"
+import {ShowLoginForm, ShowRegisterForm, signOut} from './loginForm.js'
+
+function buildNavBar() {
     const root = document.getElementById("root")
     const modal = document.getElementById("myModal")
     const nav = document.getElementById("nav")
 
+    //Build the seddit logo
     const logo = document.createElement("h1")
     logo.className="flex-center"
     logo.textContent="Seddit"
     logo.id="logo"
     nav.append(logo)
 
+    //Create a list element to store the navigation elements
     const navList = document.createElement("ul")
     navList.className="nav"
     nav.append(navList)
     const li1 = document.createElement("li")
     li1.className="nav-item"
 
+    //Build the search bar
     const search = document.createElement("input")
     search.setAttribute("data-id-search", "")
     search.setAttribute("placeholder", "Search Seddit")
@@ -24,18 +30,19 @@ export function buildNavBar () {
     li1.append(search)
     navList.append(li1)
     
+    //Context sensetive navigation buttons dependant on whether the user is logged in
     if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+        //If the user is logged in show a sign in and sign up button
         const li2 = document.createElement("li")
         li2.className="nav-item"
         const login = document.createElement("button")
         login.textContent="Log In"
         login.className="button button-primary"
-        //login.id="login-button"
         login.setAttribute("data-id-login", "")
         li2.append(login)
         navList.append(li2)
+        //Adds an event listener to the login button to show the login form
         login.addEventListener("click", function() {
-            //Go to login form
             modal.style.display = "block"
             ShowLoginForm()
         })
@@ -48,12 +55,14 @@ export function buildNavBar () {
         signup.textContent="Sign Up"
         li3.append(signup)
         navList.append(li3)
+        //Adds an event listener to the register button to show the register form
         signup.addEventListener("click", function() {
-            //Go to register form
             modal.style.display = "block"
             ShowRegisterForm()
         })
     } else {
+        //If the user is logged in show a personalised greeting with a link to the user
+        //profile and a sign out button
         const li2 = document.createElement("li")
         li2.className="nav-item"
         const greeting = document.createElement("p")
@@ -62,6 +71,7 @@ export function buildNavBar () {
         const profileLink = document.createElement("a")
         profileLink.className="upvoteCount"
 
+        //Make an API call to get current user data from the API
         const apiURL = localStorage.getItem("apiURL")
         let options = {
             method: "GET",
@@ -70,9 +80,7 @@ export function buildNavBar () {
                 "Authorization" : "Token " + localStorage.getItem("Token")
             }
         }
-
         fetch(`${apiURL}/user/`, options)
-            //.then(r => {console.log(r.status); return r})
             .then(r => r.json())
             .then(r => {
                 profileLink.textContent=r.username
@@ -81,11 +89,12 @@ export function buildNavBar () {
                 })
             })
 
-        
         greeting.append(profileLink)
         li2.append(greeting)
         navList.append(li2)
-
+        
+        //Build the sign out button, add an event listener to sign the user
+        //out
         const li3 = document.createElement("li")
         li3.className="nav-item"
         const login = document.createElement("button")
@@ -99,18 +108,7 @@ export function buildNavBar () {
     }
 }
 
-function rebuildNavBar() {
-    const nav = document.getElementById("nav")
-
-    const children = nav.children
-    while(children.length > 0){
-        children[0].parentNode.removeChild(children[0]);
-    }
-    buildNavBar()
-}
-
 function showUserProfile(user) {
-    console.log(user)
     clearModal()
     openModal()
     
@@ -136,7 +134,7 @@ function showUserProfile(user) {
     
     if (user.posts.length > 0) {
         localStorage.setItem("Upvotes", 0)
-        for (post of user.posts) {
+        for (let post of user.posts) {
             const apiURL = localStorage.getItem("apiURL")
             let options = {
                 method: "GET",
@@ -150,7 +148,6 @@ function showUserProfile(user) {
             .then(r => {
                 let newupvotes=parseInt(localStorage.getItem("Upvotes"))+r.meta.upvotes.length
                 localStorage.setItem("Upvotes", newupvotes)
-                console.log(parseInt(localStorage.getItem("Upvotes")))
                 upvotes.textContent="Upvotes: " + localStorage.getItem("Upvotes")
             })
         }
@@ -165,3 +162,19 @@ function showUserProfile(user) {
     modalBody[0].append(posts)
     modalBody[0].append(upvotes)
 }
+
+function rebuildNavBar() {
+    //Clears the navbar, then repopulates it based on the current paramaters
+        //To be used when changing between logged in and logged out to ensure
+        //Correct context menu
+    const nav = document.getElementById("nav")
+
+    //Loop through the nav bar's children and remove them until there are no children left
+    const children = nav.children
+    while(children.length > 0){
+        children[0].parentNode.removeChild(children[0]);
+    }
+    buildNavBar()
+}
+
+export {buildNavBar, showUserProfile, rebuildNavBar}

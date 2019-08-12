@@ -1,3 +1,7 @@
+import {rebuildFeed} from './feed.js'
+import {rebuildNavBar} from './navbar.js'
+import {clearModal, closeModal} from "./modal.js"
+
 function ShowLoginForm() {
     clearModal()
     const modal = document.getElementById("myModal");
@@ -72,12 +76,6 @@ function ShowRegisterForm() {
     const modalHeader = document.getElementsByClassName("modal-header")
     const modalBody = document.getElementsByClassName("modal-body")
     const modalFooter = document.getElementsByClassName("modal-footer")
-    
-    const left = document.getElementsByClassName("left")
-    const sideImage = document.createElement("img")
-    sideImage.setAttribute("src", "images/loginImage.png")
-    sideImage.id="sideImage"
-    left[0].append(sideImage)
 
     const error = document.createElement("div")
     error.id = "loginError"
@@ -153,13 +151,18 @@ function ShowRegisterForm() {
 }
 
 function signOut() {
+    //import {rebuildFeed} from './feed.js'
+    //import {rebuildNavBar} from './navbar.js'
     localStorage.removeItem("Token")
     localStorage.removeItem("userID")
+    console.log("here")
     rebuildNavBar()
     rebuildFeed()
 }
 
 function tryLogin() {
+    //import {rebuildFeed} from './feed.js'
+    //import {rebuildNavBar} from './navbar.js'
     const data = {
         username : document.getElementById("uname").value,
         password : document.getElementById("pword").value
@@ -193,6 +196,8 @@ function tryLogin() {
 }
 
 function tryRegister() {
+    //import {rebuildFeed} from './feed.js'
+    //import {rebuildNavBar} from './navbar.js'
     const data = {
         username : document.getElementById("uname").value,
         password : document.getElementById("pword").value,
@@ -247,7 +252,6 @@ function saveUserID() {
     }
     let userID
     fetch(`${apiURL}/user/`, options)
-        //.then(r => {console.log(r.status); return r})
         .then(r => r.json())
         .then(r => {
             localStorage.setItem("userID", r.id)
@@ -256,3 +260,5 @@ function saveUserID() {
     
     
 }
+
+export {ShowLoginForm, ShowRegisterForm, signOut, tryLogin, tryRegister, saveUserID}

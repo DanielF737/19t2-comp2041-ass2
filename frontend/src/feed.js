@@ -1,4 +1,8 @@
-export function buildFeed() {
+import {showPostForm} from './post.js'
+import {clearModal, openModal, openBottomModal} from "./modal.js"
+import {ShowLoginForm} from './loginForm.js'
+
+function buildFeed() {
     const main = document.getElementById("main")
     
     const feed = document.createElement("ul")
@@ -38,9 +42,13 @@ export function buildFeed() {
             }
 
         }
+        //console.log(options)
         fetch(`${apiURL}/post/public`, options)
             .then(r=> r.json())
-            .then(r => {buildUser(r.posts)})
+            .then(r => {
+                console.log(r)
+                buildUser(r.posts)
+            })
         localStorage.setItem("numPosts", -1)
     } else {
         title.textContent="Your Timeline"
@@ -55,14 +63,16 @@ export function buildFeed() {
         fetch(`${apiURL}/user/feed?n=5`, options)
             .then(r=> r.json())
             .then(r => {buildUser(r.posts)})
-        }
         localStorage.setItem("numPosts", 5)
         let now = new Date()
         localStorage.setItem("lastCalled", now.getTime())
+    }
 }
 
 async function buildUser(posts) {
+    console.log("here\n" + posts)
     for (const items of posts) {
+        console.log("here")
         const post = document.createElement("li")
         post.className="post"
         post.setAttribute("data-id-post", "")
@@ -140,7 +150,6 @@ async function buildUser(posts) {
         author.className="post-author inlineplz"
         author.setAttribute("data-id-author", "")
         let date = new Date(items.meta.published * 1000)
-        console.log(date)
         let hours=date.getHours()
         let minutes=date.getMinutes()
         let day=date.getDate()
@@ -198,7 +207,6 @@ function viewUpvotes(postID) {
         }
 
         fetch(`${apiURL}/post/?id=${postID}`, options)
-            //.then(r => {console.log(r.status); return r})
             .then(r => r.json())
             .then(r => {
                 const upvotes=r.meta.upvotes
@@ -290,14 +298,10 @@ function postUpvote(postID, button, count) {
                 "Authorization" : "Token " + localStorage.getItem("Token")
             }
         }
-        //let upvoteState=0
-
-        console.log(`user id = ${userID}`)
+        
         fetch(`${apiURL}/post/?id=${postID}`, options)
-            //.then(r => {console.log(r.status); return r})
             .then(r => r.json())
             .then(r => {
-                console.log(r.meta.upvotes.includes(parseInt(userID)))
                 if (r.meta.upvotes.includes(parseInt(userID))) {
                     //rm them from the list (delete post/vote req)
                     options = {
@@ -308,7 +312,6 @@ function postUpvote(postID, button, count) {
                         }
                     }
                     fetch(`${apiURL}/post/vote/?id=${postID}`, options)
-                    .then(r => {console.log(`delete status ${r.status}`); return r})
 
                     count.textContent=parseInt(count.textContent)-1
                     button.src="images/upvoteDefault.png"
@@ -322,7 +325,6 @@ function postUpvote(postID, button, count) {
                         }
                     }
                     fetch(`${apiURL}/post/vote/?id=${postID}`, options)
-                    .then(r => {console.log(`add status ${r.status}`); return r})
 
                     count.textContent=parseInt(count.textContent)+1
                     button.src="images/upvotePressed.png"
@@ -331,7 +333,7 @@ function postUpvote(postID, button, count) {
     }
 }
 
-export function infiniteScroll() {
+function infiniteScroll() {
     window.addEventListener("scroll", function() {
         let feed = document.getElementById("feed")
         let windowHeight = window.pageYOffset
@@ -353,7 +355,6 @@ export function infiniteScroll() {
 
 function addPosts() {
     let current = localStorage.getItem("numPosts")
-    console.log(current)
     if (current < 0) {return}
 
     const apiURL = localStorage.getItem("apiURL")
@@ -367,13 +368,13 @@ function addPosts() {
     let p = parseInt(current)
     localStorage.setItem("numPosts", p+5)
     let n = 5
-    console.log(`${apiURL}/user/feed?p=${p}&n=${n}`)
     fetch(`${apiURL}/user/feed?p=${p}&n=${n}`, options)
         .then(r=> r.json())
         .then(r => {
-            console.log(r.posts)
             buildUser(r.posts)
         })
     
 
 }
+
+export {buildFeed,buildUser, rebuildFeed, viewUpvotes, viewComments, postUpvote, infiniteScroll, addPosts}

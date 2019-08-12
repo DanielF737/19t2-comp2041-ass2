@@ -1,3 +1,5 @@
+import {buildPostModal, clearBottomModal, closeBottomModal} from "./modal.js"
+
 function showPostForm() {
     clearBottomModal()
     buildPostModal()
@@ -109,3 +111,5 @@ function toDataURL(file) {
         reader.addEventListener("error", (error) => reject(error))
     })
 }
+
+export {showPostForm, tryPost, toDataURL}

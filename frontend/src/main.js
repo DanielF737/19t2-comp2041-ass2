@@ -5,9 +5,8 @@
  */
 
 // import your own scripts here.
-import { buildFeed }from './feed.js'
-import { infiniteScroll } from './feed.js'
-import { buildNavBar } from './navbar.js'
+import {buildFeed} from './feed.js'
+import {buildNavBar} from './navbar.js'
 
 // your app must take an apiUrl as an argument --
 // this will allow us to verify your apps behaviour with 
@@ -47,7 +46,6 @@ function initApp(apiUrl) {
   root.append(main)
 
   buildFeed()
-  infiniteScroll()
 
 }
 

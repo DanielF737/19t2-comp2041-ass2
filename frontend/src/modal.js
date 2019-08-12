@@ -1,8 +1,5 @@
-// Build the modal
 function buildModal() {
     const modal = document.getElementById("myModal")
-
-    
 
     const modalContent = document.createElement("div")
     modalContent.className="modal-content"
@@ -36,21 +33,17 @@ function buildModal() {
     span.className="close"
     modalHeader.append(span)
 
-    // When the user clicks on <span> (x), close the modal
+    // When the user clicks on x, close the modal
     span.addEventListener("click", function() {
         closeModal()
-        //modal.style.display = "none";
     })
 
     // When the user clicks anywhere outside of the modal, close it
     window.addEventListener("click", e => {
         if (e.target == modal) {
             closeModal()
-            //modal.style.display = "none";
         }
     })
-
-    //modal.style.display="none"
 }
 
 function clearModal() {
@@ -96,17 +89,15 @@ function buildPostModal() {
     span.className="bottom-close"
     modalHeader.append(span)
 
-    // When the user clicks on <span> (x), close the modal
+    // When the user clicks on x, close the modal
     span.addEventListener("click", function() {
         closeBottomModal()
-        //modal.style.display = "none";
     })
 
     // When the user clicks anywhere outside of the modal, close it
     window.addEventListener("click", e => {
         if (e.target == modal) {
             closeBottomModal()
-            //modal.style.display = "none";
         }
     })
     
@@ -133,3 +124,5 @@ function closeBottomModal() {
     const modal = document.getElementById("myBottomModal")
     modal.style.display="none";
 }
+
+export {buildModal, clearModal, openModal, closeModal, buildPostModal, clearBottomModal, openBottomModal, closeBottomModal}
