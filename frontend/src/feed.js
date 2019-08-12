@@ -1,4 +1,4 @@
-function buildFeed() {
+export function buildFeed() {
     const main = document.getElementById("main")
     
     const feed = document.createElement("ul")
@@ -13,7 +13,9 @@ function buildFeed() {
     title.className="feed-title alt-text"
     title.textContent="Popular posts"
     header.append(title)
-    postButton = document.createElement("button")
+    
+    const postButton = document.createElement("button")
+
     postButton.textContent = "Post"
     postButton.className = "button - button-secondary"
     postButton.addEventListener("click", function() {
@@ -124,20 +126,27 @@ async function buildUser(posts) {
         post.append(content)
 
         const sub = document.createElement("h3")
+        sub.className="sub"
         sub.textContent= "/s/"+items.meta.subseddit
         content.append(sub)
 
         const heading = document.createElement("h4")
-        heading.className="post-title alt-text"
+        heading.className="post-title alt-text inlineplz"
         heading.setAttribute("data-id-title", "")
         heading.textContent= items.title
         content.append(heading)
 
         const author = document.createElement("p")
-        author.className="post-author"
+        author.className="post-author inlineplz"
         author.setAttribute("data-id-author", "")
         let date = new Date(items.meta.published * 1000)
-        author.textContent="Posted by @" + items.meta.author + " at " + date
+        console.log(date)
+        let hours=date.getHours()
+        let minutes=date.getMinutes()
+        let day=date.getDate()
+        let month = date.getMonth() + 1
+        let year = date.getFullYear().toString().substr(-2)
+        author.textContent=`Posted by @${items.meta.author} at ${hours}:${minutes} on ${day}/${month}/${year}`
         content.append(author)
 
         const postText = document.createElement("p")
@@ -153,6 +162,7 @@ async function buildUser(posts) {
 
         const viewComm = document.createElement("button")
         viewComm.textContent="Comments (" + items.comments.length+")"
+        viewComm.className="button button-primary"
         content.append(viewComm)
         viewComm.addEventListener("click", function() {
             viewComments(items.comments)
@@ -268,6 +278,7 @@ function postUpvote(postID, button, count) {
     if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
         openModal()
         ShowLoginForm()
+        button.src="images/upvoteDefault.png"
     } else {
         //Check to see upvote state of user on post
         const userID = localStorage.getItem("userID")
@@ -320,7 +331,7 @@ function postUpvote(postID, button, count) {
     }
 }
 
-function infiniteScroll() {
+export function infiniteScroll() {
     window.addEventListener("scroll", function() {
         let feed = document.getElementById("feed")
         let windowHeight = window.pageYOffset

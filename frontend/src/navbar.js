@@ -1,4 +1,4 @@
-function buildNavBar () {
+export function buildNavBar () {
     const root = document.getElementById("root")
     const modal = document.getElementById("myModal")
     const nav = document.getElementById("nav")

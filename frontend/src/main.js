@@ -5,6 +5,9 @@
  */
 
 // import your own scripts here.
+import { buildFeed }from './feed.js'
+import { infiniteScroll } from './feed.js'
+import { buildNavBar } from './navbar.js'
 
 // your app must take an apiUrl as an argument --
 // this will allow us to verify your apps behaviour with 
@@ -36,7 +39,7 @@ function initApp(apiUrl) {
   bottomModal.className= "bottom-modal"
   root.append(bottomModal)
 
-  buildNavBar() //Need to make this context sensitive
+  buildNavBar() 
   
   const main = document.createElement("main")
   main.setAttribute("role", "main")
@@ -45,7 +48,6 @@ function initApp(apiUrl) {
 
   buildFeed()
   infiniteScroll()
-  //buildFooter()
 
 }
 
