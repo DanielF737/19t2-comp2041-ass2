@@ -9,13 +9,7 @@ function ShowLoginForm() {
     const title=document.createElement("h2")
     title.textContent="Log In"
     modalHeader[0].append(title)
-    
-    const left = document.getElementsByClassName("left")
-    const sideImage = document.createElement("img")
-    sideImage.setAttribute("src", "images/loginImage.png")
-    sideImage.id="sideImage"
-    left[0].append(sideImage)
-    
+        
     const error = document.createElement("div")
     error.id = "loginError"
     const errorText=document.createElement("p")
@@ -49,9 +43,7 @@ function ShowLoginForm() {
     submitBtn.className="button button-secondary"
     submitBtn.addEventListener("click", function(e) {
         e.preventDefault()
-        tryLogin(   
-
-        )
+        tryLogin()
     })
 
     form.append(uname)
@@ -162,6 +154,7 @@ function ShowRegisterForm() {
 
 function signOut() {
     localStorage.removeItem("Token")
+    localStorage.removeItem("userID")
     rebuildNavBar()
     rebuildFeed()
 }
@@ -189,7 +182,9 @@ function tryLogin() {
             if (localStorage.getItem("Token")==="undefined") {
                 const error = document.getElementById("loginError")
                 error.style.display = "block"
+                document.getElementById("pword").value=""
             } else {
+                saveUserID()
                 closeModal()
                 rebuildNavBar()
                 rebuildFeed()
@@ -233,9 +228,31 @@ function tryRegister() {
                 const error = document.getElementById("loginError")
                 error.style.display = "block"
             } else {
+                saveUserID()
                 closeModal()
                 rebuildNavBar()
                 rebuildFeed()
             }
         })
+}
+
+function saveUserID() {
+    const apiURL = localStorage.getItem("apiURL")
+    let options = {
+        method: "GET",
+        headers: {
+            'Content-Type' : 'application/JSON',
+            "Authorization" : "Token " + localStorage.getItem("Token")
+        }
+    }
+    let userID
+    fetch(`${apiURL}/user/`, options)
+        //.then(r => {console.log(r.status); return r})
+        .then(r => r.json())
+        .then(r => {
+            localStorage.setItem("userID", r.id)
+            return r.id
+        })
+    
+    
 }

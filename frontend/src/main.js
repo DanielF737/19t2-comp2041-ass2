@@ -11,6 +11,10 @@
 // different datasets.
 function initApp(apiUrl) {
   // your app initialisation goes here
+  if (localStorage.getItem("Token")==="undefined") {
+    localStorage.removeItem("Token")
+  }
+
   localStorage.setItem("apiURL", apiUrl)
 
   const root = document.createElement("div")
@@ -27,6 +31,11 @@ function initApp(apiUrl) {
   modal.className= "modal"
   root.append(modal)
   
+  const bottomModal = document.createElement("div")
+  bottomModal.id = "myBottomModal"
+  bottomModal.className= "bottom-modal"
+  root.append(bottomModal)
+
   buildNavBar() //Need to make this context sensitive
   
   const main = document.createElement("main")
@@ -35,7 +44,7 @@ function initApp(apiUrl) {
   root.append(main)
 
   buildFeed()
-
+  infiniteScroll()
   //buildFooter()
 
 }

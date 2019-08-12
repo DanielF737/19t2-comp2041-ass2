@@ -153,10 +153,6 @@ footer > * {
 
 /* Add your styles here */
 
-.post{
-
-}
-
 .postImage {
   max-width: 100%;
   height:auto;
@@ -165,16 +161,26 @@ footer > * {
 }
 
 .vote {
+  min-width:35px;
   text-align: center;
 }
 
 .upvoteButton {
-  max-width: 100%;
-  
+  max-width: 45%;
+  padding:8px;
+  padding-top:15px;
 }
 
-.upvoteButton:hover {
+.upvoteButton.change:hover {
   src: "image/upvoteHover.png"
+}
+
+.upvoteButton:active {
+  src: "image/upvoteDown.png"
+}
+
+.upvoteButton:visited {
+  src: "image/upvotePressed.png"
 }
 
 .commWrap {
@@ -187,6 +193,14 @@ footer > * {
 .commList {
   /*list-style-type: none;*/
   padding:0px;
+}
+
+.upvoteCount {
+  text-decoration: underline;
+}
+
+.upvoteCount:hover{
+  cursor: pointer;
 }
 
 .upvWrap {

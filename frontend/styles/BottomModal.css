@@ -1,5 +1,5 @@
 /* The Modal (background) */
-.modal {
+.bottom-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -17,7 +17,7 @@
   }
   
   /* Modal Content */
-  .modal-content {
+  .bottom-modal-content {
     position: fixed;
     bottom: 0;
     background-color: #fefefe;
@@ -29,29 +29,29 @@
   }
   
   /* The Close Button */
-  .close {
+  .bottom-close {
     color: white;
     float: right;
     font-size: 28px;
     font-weight: bold;
   }
   
-  .close:hover,
-  .close:focus {
+  .bottom-close:hover,
+  .bottom-close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
   }
   
-  .modal-header {
+  .bottom-modal-header {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
   }
   
-  .modal-body {padding: 2px 16px;}
+  .bottom-modal-body {padding: 2px 16px;}
   
-  .modal-footer {
+  .bottom-modal-footer {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
