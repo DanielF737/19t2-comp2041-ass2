@@ -1,2 +1,6 @@
-25/07/19     18:00   18:15   put the first real entry in diary.txt (delete this line!)
+09/08/19     09:00   15:00  Started and completed subset 0
+10/08/19     12:00   17:00  Started and completed subset 1, progress on CSS
+11/08/19     11:00   15:00  Started Subset 2, Completed show upvotes, comments, upvote user generated comments  
+12/08/19     09:00   17:00  Completed subset 2, infinite scroll, more progress on CSS
+13/08/19     09:00   15:00  
 
