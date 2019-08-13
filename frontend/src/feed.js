@@ -197,6 +197,7 @@ async function buildUser(posts) {
             //set the upvote image to the correct state
             upvoteImage.addEventListener("mouseleave", function() {
                 const apiURL = localStorage.getItem("apiURL")
+                const userID = localStorage.getItem("userID")
                 let postID=items.id
                 let options = {
                     method: "GET",
