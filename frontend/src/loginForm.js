@@ -151,18 +151,15 @@ function ShowRegisterForm() {
 }
 
 function signOut() {
-    //import {rebuildFeed} from './feed.js'
-    //import {rebuildNavBar} from './navbar.js'
     localStorage.removeItem("Token")
     localStorage.removeItem("userID")
-    console.log("here")
     rebuildNavBar()
     rebuildFeed()
+    const title=document.getElementsByClassName("feed-title")
+    title[0].selectedIndex=0 
 }
 
 function tryLogin() {
-    //import {rebuildFeed} from './feed.js'
-    //import {rebuildNavBar} from './navbar.js'
     const data = {
         username : document.getElementById("uname").value,
         password : document.getElementById("pword").value
@@ -196,8 +193,6 @@ function tryLogin() {
 }
 
 function tryRegister() {
-    //import {rebuildFeed} from './feed.js'
-    //import {rebuildNavBar} from './navbar.js'
     const data = {
         username : document.getElementById("uname").value,
         password : document.getElementById("pword").value,

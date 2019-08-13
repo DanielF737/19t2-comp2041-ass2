@@ -5,7 +5,7 @@
  */
 
 // import your own scripts here.
-import {buildFeed} from './feed.js'
+import {buildFeed, infiniteScroll} from './feed.js'
 import {buildNavBar} from './navbar.js'
 
 // your app must take an apiUrl as an argument --
@@ -46,7 +46,7 @@ function initApp(apiUrl) {
   root.append(main)
 
   buildFeed()
-
+  infiniteScroll()
 }
 
 export default initApp;

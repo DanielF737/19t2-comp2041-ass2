@@ -1,6 +1,7 @@
 import {showPostForm} from './post.js'
 import {clearModal, openModal, openBottomModal} from "./modal.js"
 import {ShowLoginForm} from './loginForm.js'
+import { showUserProfile } from './navbar.js';
 
 function buildFeed() {
     const main = document.getElementById("main")
@@ -13,10 +14,68 @@ function buildFeed() {
     const header = document.createElement("div")
     header.className="feed-header"
     feed.append(header)
-    const title = document.createElement("h3")
+    
+    const title = document.createElement("select")
     title.className="feed-title alt-text"
-    title.textContent="Popular posts"
+    title.setAttribute("dir", "rtl")
     header.append(title)
+
+    const op1 = document.createElement("option")
+    op1.textContent="Popular posts "
+    op1.addEventListener("click", function(){
+        //Change to public feedconst 
+        clearFeed()
+        const apiURL = localStorage.getItem("apiURL")
+        let options = {
+            method: "GET",
+            headers: {
+                'Content-Type' : 'application/JSON'
+            }
+
+        }
+        fetch(`${apiURL}/post/public`, options)
+            .then(r=> r.json())
+            .then(r => {
+                buildUser(r.posts)
+            })
+        localStorage.setItem("numPosts", -1)
+    })
+    
+    title.append(op1)
+    const op2 = document.createElement("option")
+    op2.textContent="Your Timeline "
+    op2.addEventListener("click", function(){
+        //Change to other feed if logged in
+            //Rebuild feed, set this dropdown to the right text, show user feed
+            if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+                title.selectedIndex=0 
+                openModal()
+                ShowLoginForm()
+            } else {
+                clearFeed()
+                const apiURL = localStorage.getItem("apiURL")
+                let options = {
+                    method: "GET",
+                    headers: {
+                        'Content-Type' : 'application/JSON',
+                        "Authorization" : "Token " + localStorage.getItem("Token")
+                    }
+                }
+                fetch(`${apiURL}/user/feed?n=5`, options)
+                    .then(r=> r.json())
+                    .then(r => {buildUser(r.posts)})
+                localStorage.setItem("numPosts", 5)
+                let now = new Date()
+                localStorage.setItem("lastCalled", now.getTime())
+                title.selectedIndex=1 
+            }
+    })
+    title.append(op2)
+    if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+        title.selectedIndex=0
+    }else{
+        title.selectedIndex=1
+    }
     
     const postButton = document.createElement("button")
 
@@ -42,16 +101,13 @@ function buildFeed() {
             }
 
         }
-        //console.log(options)
         fetch(`${apiURL}/post/public`, options)
             .then(r=> r.json())
             .then(r => {
-                console.log(r)
                 buildUser(r.posts)
             })
         localStorage.setItem("numPosts", -1)
     } else {
-        title.textContent="Your Timeline"
         const apiURL = localStorage.getItem("apiURL")
         let options = {
             method: "GET",
@@ -70,9 +126,18 @@ function buildFeed() {
 }
 
 async function buildUser(posts) {
-    console.log("here\n" + posts)
+    if (posts.length===0) {
+        const feedC = document.getElementsByClassName("noPost")
+        if(feedC.length > 0){return}
+        const post = document.createElement("p")
+        post.className="noPost"
+        post.textContent="No more posts to display"
+        post.style.color="gray"
+        post.style.textAlign="center"
+        post.style.paddingTop="80px"
+        feed.append(post)
+    }
     for (const items of posts) {
-        console.log("here")
         const post = document.createElement("li")
         post.className="post"
         post.setAttribute("data-id-post", "")
@@ -85,18 +150,11 @@ async function buildUser(posts) {
         
         const upvoteImage = document.createElement("input")
         upvoteImage.type="image"
-        let userID = localStorage.getItem("userID")
-        if (items.meta.upvotes.includes(parseInt(userID))) {
-            upvoteImage.setAttribute("src", "images/upvotePressed.png")
-        } else {
-            upvoteImage.setAttribute("src", "images/upvoteDefault.png")
-        }
-        //Check if have upvoted
-        upvoteImage.className="upvoteButton"
-
+        upvoteImage.setAttribute("src", "images/upvoteDefault.png")
         const upvoteCount = document.createElement("a")
         upvoteCount.className="upvoteCount"
         upvoteCount.textContent=items.meta.upvotes.length
+        upvoteImage.className="upvoteButton"
         upvoteCount.addEventListener("click", function() {
             viewUpvotes(items.id)
         })
@@ -104,30 +162,43 @@ async function buildUser(posts) {
         upvoteImage.addEventListener("mouseenter", function() {
             upvoteImage.src="images/upvoteDown.png"
         })
-        upvoteImage.addEventListener("mouseleave", function() {
-            const apiURL = localStorage.getItem("apiURL")
-            let postID=items.id
-            let options = {
-                method: "GET",
-                headers: {
-                    'Content-Type' : 'application/JSON',
-                    "Authorization" : "Token " + localStorage.getItem("Token")
-                }
-            }
-            fetch(`${apiURL}/post/?id=${postID}`, options)
-                .then(r => r.json())
-                .then(r => {
-                    if (r.meta.upvotes.includes(parseInt(userID))) {
-                        upvoteImage.setAttribute("src", "images/upvotePressed.png")
-                    } else {
-                        upvoteImage.setAttribute("src", "images/upvoteDefault.png")
-                    }
-                })
-        })
 
         upvoteImage.addEventListener("click", function() {
             postUpvote(items.id, upvoteImage, upvoteCount)
         })
+
+        if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+        } else {
+            let userID = localStorage.getItem("userID")
+            if (items.meta.upvotes.includes(parseInt(userID))) {
+                upvoteImage.setAttribute("src", "images/upvotePressed.png")
+            } else {
+                upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+            }
+            //Check if have upvoted
+        
+            upvoteImage.addEventListener("mouseleave", function() {
+                const apiURL = localStorage.getItem("apiURL")
+                let postID=items.id
+                let options = {
+                    method: "GET",
+                    headers: {
+                        'Content-Type' : 'application/JSON',
+                        "Authorization" : "Token " + localStorage.getItem("Token")
+                    }
+                }
+                fetch(`${apiURL}/post/?id=${postID}`, options)
+                    .then(r => r.json())
+                    .then(r => {
+                        if (r.meta.upvotes.includes(parseInt(userID))) {
+                            upvoteImage.setAttribute("src", "images/upvotePressed.png")
+                        } else {
+                            upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+                        }
+                    })
+            })
+
+        }
         upvote.append(upvoteImage)
         upvote.append(upvoteCount)
 
@@ -155,7 +226,35 @@ async function buildUser(posts) {
         let day=date.getDate()
         let month = date.getMonth() + 1
         let year = date.getFullYear().toString().substr(-2)
-        author.textContent=`Posted by @${items.meta.author} at ${hours}:${minutes} on ${day}/${month}/${year}`
+        const authorlink = document.createElement("a")
+        authorlink.textContent="@"+items.meta.author
+        authorlink.className="upvoteCount"
+        authorlink.addEventListener("click", function(){
+            if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+                openModal()
+                ShowLoginForm()
+            } else {
+                const apiURL = localStorage.getItem("apiURL")
+                let options = {
+                    method: "GET",
+                    headers: {
+                        'Content-Type' : 'application/JSON',
+                        "Authorization" : "Token " + localStorage.getItem("Token")
+                    }
+                }
+                fetch(`${apiURL}/user/?username=${items.meta.author}`, options)
+                    .then(r => r.json())
+                    .then(r => {
+                        showUserProfile(r)
+                    })
+            }
+        })
+
+        const text1 = document.createTextNode("Posted by ")
+        const text2 = document.createTextNode(` at ${hours}:${minutes} on ${day}/${month}/${year}`)
+        author.append(text1)
+        author.append(authorlink)
+        author.append(text2)
         content.append(author)
 
         const postText = document.createElement("p")
@@ -170,11 +269,30 @@ async function buildUser(posts) {
         }
 
         const viewComm = document.createElement("button")
+        viewComm.style.marginTop="10px"
         viewComm.textContent="Comments (" + items.comments.length+")"
         viewComm.className="button button-primary"
         content.append(viewComm)
         viewComm.addEventListener("click", function() {
-            viewComments(items.comments)
+            if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+                viewComments(items.comments, items.id, viewComm, items.comments.length)
+                return
+            }
+
+            const apiURL = localStorage.getItem("apiURL")
+            let options = {
+                method: "GET",
+                headers: {
+                    'Content-Type' : 'application/JSON',
+                    "Authorization" : "Token " + localStorage.getItem("Token")
+                }
+            }
+
+            fetch(`${apiURL}/post/?id=${items.id}`, options)
+                .then(r => r.json())
+                .then(r => {
+                    viewComments(r.comments, r.id, viewComm, items.comments.length)
+                })
         })
     }
 }
@@ -214,6 +332,9 @@ function viewUpvotes(postID) {
                 const modalHeader = document.getElementsByClassName("modal-header")
                 const modalBody = document.getElementsByClassName("modal-body")
 
+                const image = document.getElementById("sideImage")
+                image.src="images/upvoteImage.png"
+
                 const title = document.createElement("h2")
                 title.textContent="Upvotes"
                 modalHeader[0].append(title)
@@ -226,38 +347,50 @@ function viewUpvotes(postID) {
                 upvWrap.append(upvList)
                 upvList.className="upvList"
 
-                for (const upvote of upvotes) {
-                    const upvNode = document.createElement("li")
-                    const upvText = document.createElement("p")
+                if (upvotes.length===0 ) {
+                    const disc = document.createElement("p")
+                    disc.textContent="No upvotes to display"
+                    disc.style.color="gray"
+                    disc.style.paddingLeft ="30px"
+                    //disc.style.textAlign="center"
+                    upvList.append(disc)
+                } else {
+                    for (const upvote of upvotes) {
+                        const upvNode = document.createElement("li")
+                        const upvText = document.createElement("p")
 
-                    const apiURL = localStorage.getItem("apiURL")
-                    let options = {
-                        method: "GET",
-                        headers: {
-                            'Content-Type' : 'application/JSON',
-                            "Authorization" : "Token " + localStorage.getItem("Token")
+                        const apiURL = localStorage.getItem("apiURL")
+                        let options = {
+                            method: "GET",
+                            headers: {
+                                'Content-Type' : 'application/JSON',
+                                "Authorization" : "Token " + localStorage.getItem("Token")
+                            }
                         }
-                    }
 
-                    fetch(`${apiURL}/user/?id=${upvote}`, options)
-                        .then(r => r.json())
-                        .then(r => {
-                            upvText.textContent=r.username
-                        })
-                    
-                    upvNode.append(upvText)
-                    upvList.append(upvNode)
+                        fetch(`${apiURL}/user/?id=${upvote}`, options)
+                            .then(r => r.json())
+                            .then(r => {
+                                upvText.textContent=r.username
+                            })
+                        
+                        upvNode.append(upvText)
+                        upvList.append(upvNode)
+                    }
                 }
             })
     }
 }
 
-function viewComments(comments) {
+function viewComments(comments, postID, passBtn, totalComms) {
     clearModal()
     openModal()
-    const modal = document.getElementById("myModal");
+
     const modalHeader = document.getElementsByClassName("modal-header")
     const modalBody = document.getElementsByClassName("modal-body")
+
+    const image = document.getElementById("sideImage")
+    image.src="images/commentImage.png"
 
     const title = document.createElement("h2")
     title.textContent="Comments"
@@ -271,14 +404,74 @@ function viewComments(comments) {
     commWrap.append(commList)
     commList.className="commList"
 
-    for (const comment of comments) {
+    if (comments.length===0 ) {
+        const disc = document.createElement("p")
+        disc.textContent="No comments to display"
+        disc.style.color="gray"
+        disc.style.paddingLeft ="60px"
+        commList.append(disc)
+    } else {
+        for (const comment of comments) {
+            const commNode = document.createElement("li")
+            const commText = document.createElement("p")
+            commText.textContent=comment.comment
+            
+            commNode.append(commText)
+            commList.append(commNode)
+        }
+    }
+
+    if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {return}
+    const commForm = document.createElement("form")
+    commForm.id="commForm"
+    const commIn = document.createElement("textarea")
+    commIn.className="commTextArea"
+    commIn.setAttribute("placeholder", "Write your comment here...")
+    const postBtn = document.createElement("button")
+    postBtn.className="button button-secondary"
+    postBtn.textContent="Post Comment"
+
+    commForm.append(commIn)
+    commForm.append(postBtn)
+
+    modalBody[0].append(commForm)
+
+    postBtn.addEventListener("click", function(e){
+        e.preventDefault()
+        if (commIn.value===""){return}
+        const data = {comment : commIn.value} 
+
+        const apiURL = localStorage.getItem("apiURL")
+        let options = {
+            method: "PUT",
+            headers: {
+                'Content-Type' : 'application/JSON',
+                "Authorization" : "Token " + localStorage.getItem("Token")
+            },
+            body: JSON.stringify(data)
+        }
+
+        fetch(`${apiURL}/post/comment?id=${postID}`, options)
+
+        if (totalComms===0) {
+            const children = commList.children
+            while(children.length > 0){
+                children[0].parentNode.removeChild(children[0]);
+            }
+        }
+
+        totalComms+=1
+        passBtn.textContent="Comments (" + totalComms +")"
+
         const commNode = document.createElement("li")
         const commText = document.createElement("p")
-        commText.textContent=comment.comment
+        commText.textContent=commIn.value
         
         commNode.append(commText)
         commList.append(commNode)
-    }
+
+        commIn.value=""
+    })
 
 }
 
@@ -340,7 +533,7 @@ function infiniteScroll() {
         let total = windowHeight+ window.innerHeight
         if (total >= feed.offsetHeight) {
             //If logged in add more
-            if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+            if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined"|| localStorage.getItem("numPosts") < 0) {
                 return
             } else {
                 let now = new Date()
@@ -375,6 +568,18 @@ function addPosts() {
         })
     
 
+}
+
+function clearFeed() {
+    let feed = document.getElementsByClassName("post")
+    while(feed.length > 0){
+        feed[0].parentNode.removeChild(feed[0]);
+    }
+    
+    feed = document.getElementsByClassName("noPost")
+    while(feed.length > 0){
+        feed[0].parentNode.removeChild(feed[0]);
+    }
 }
 
 export {buildFeed,buildUser, rebuildFeed, viewUpvotes, viewComments, postUpvote, infiniteScroll, addPosts}

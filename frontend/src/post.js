@@ -38,11 +38,25 @@ function showPostForm() {
     postText.id="postText"
     postText.setAttribute("placeholder", "Post Text")
     postText.setAttribute("type", "text")
+
+    const br = document.createElement("br")
+
+    const imgDiv = document.createElement("div")
+    imgDiv.className="box"
+    const label = document.createElement("label")
+    label.className="button button-primary padd"
+    const labText = document.createTextNode("Find image")
+    label.append(labText)
+
     const postImage = document.createElement("input")
     postImage.setAttribute("type", "file")
     postImage.setAttribute("accept", ".png")
     postImage.className = "fileInput"
     postImage.id="postImage"
+    
+    imgDiv.append(postImage)
+    imgDiv.append(label)
+    
     const submitBtn = document.createElement("button")
     submitBtn.textContent="Create Post"
     submitBtn.className="button button-secondary"
@@ -54,12 +68,12 @@ function showPostForm() {
     postForm.append(postSub)
     postForm.append(postTitle)
     postForm.append(postText)
-    postForm.append(postImage)
+    postForm.append(br)
+    postForm.append(imgDiv)
     postForm.append(submitBtn)
 }
 
 async function tryPost() {
-    //console.log("yeet")
     let base64
     if (document.getElementById("postImage").value!="") {
         base64=await toDataURL(document.getElementById("postImage").files[0])
@@ -70,13 +84,11 @@ async function tryPost() {
         text : document.getElementById("postText").value,
         subseddit : document.getElementById("postSub").value,
         image : base64
-    }    
-    //console.log(data)
+    } 
 
     if (data.title===""||data.text===""||data.subseddit==="") {
         const errorTest = document.getElementById("postError")
         errorTest.style.display="block";
-        //console.log("empty post fields error")
         return;
     } 
 
@@ -93,12 +105,6 @@ async function tryPost() {
     }
 
     fetch(`${apiURL}/post`, options)
-        //.then(r => {console.log(r.status); return r})
-        .then(r => r.json())
-        .then(r => {
-            //do stuff
-        })
-
 
     closeBottomModal()
 }
