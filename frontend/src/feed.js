@@ -170,7 +170,7 @@ async function buildUser(posts) {
         upvoteImage.type="image"
         //Set the upvote image based on whether the logged in user has upvoted it
         if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
-            const upvoteImage = document.createElement("input")
+            console.log("yeet")
             upvoteImage.type="image"
             upvoteImage.setAttribute("src", "images/upvoteDefault.png")
         } else {
