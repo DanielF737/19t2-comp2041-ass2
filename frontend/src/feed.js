@@ -23,6 +23,7 @@ function buildFeed() {
     const op1 = document.createElement("option")
     op1.textContent="Popular posts "
     op1.addEventListener("click", function(){
+        console.log("op1")
         //Change to public feedconst 
         clearFeed()
         const apiURL = localStorage.getItem("apiURL")
@@ -45,6 +46,7 @@ function buildFeed() {
     const op2 = document.createElement("option")
     op2.textContent="Your Timeline "
     op2.addEventListener("click", function(){
+        console.log("op2")
         //Change to other feed if logged in
             //Rebuild feed, set this dropdown to the right text, show user feed
             if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
