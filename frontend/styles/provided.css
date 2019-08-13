@@ -365,3 +365,7 @@ footer > * {
 .imagePost {
   max-width: 800px;
 }
+
+.postText {
+  max-width: 750px;
+}

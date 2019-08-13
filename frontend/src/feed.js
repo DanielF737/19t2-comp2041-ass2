@@ -286,6 +286,7 @@ async function buildUser(posts) {
         //Create elements for the post text and append
         const postText = document.createElement("p")
         postText.textContent=items.text
+        postText.class="postText"
         content.append(postText)
         
         //If the post has an image, create an image object and add it to the form
