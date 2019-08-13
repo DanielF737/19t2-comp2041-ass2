@@ -168,7 +168,33 @@ async function buildUser(posts) {
         //Create the upvote image and counter and set them based on their values
         const upvoteImage = document.createElement("input")
         upvoteImage.type="image"
-        upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+        //Set the upvote image based on whether the logged in user has upvoted it
+        if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+            const upvoteImage = document.createElement("input")
+            upvoteImage.type="image"
+            upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+        } else {
+            const apiURL = localStorage.getItem("apiURL")
+            const userID = localStorage.getItem("userID")
+            let postID=items.id
+            let options = {
+                method: "GET",
+                headers: {
+                    'Content-Type' : 'application/JSON',
+                    "Authorization" : "Token " + localStorage.getItem("Token")
+                }
+            }
+            fetch(`${apiURL}/post/?id=${postID}`, options)
+                .then(r => r.json())
+                .then(r => {
+                    if (r.meta.upvotes.includes(parseInt(userID))) {
+                        upvoteImage.setAttribute("src", "images/upvotePressed.png")
+                    } else {
+                        upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+                    }
+                })
+        }
+        
         const upvoteCount = document.createElement("a")
         upvoteCount.className="upvoteCount"
         upvoteCount.textContent=items.meta.upvotes.length

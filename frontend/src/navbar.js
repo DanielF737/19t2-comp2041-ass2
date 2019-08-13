@@ -171,8 +171,64 @@ async function showUserProfile(user) {
     followerLabel.textContent="Followers"
     const following = document.createElement("p")
     following.textContent = user.following.length
-    const followingLabel = document.createElement("p")
+    const followingLabel = document.createElement("a")
     followingLabel.textContent="Following"
+    followingLabel.className="upvoteCount"
+    followingLabel.addEventListener("click", function(){
+        //Add an event listener to open a modal that shows a list of
+        //everyone the user follows
+        clearModal()
+        openModal()
+        
+        const modalHeader = document.getElementsByClassName("modal-header")
+        const modalBody = document.getElementsByClassName("modal-body")
+
+        const title = document.createElement("h2")
+        title.textContent=user.username + "'s Following"
+        modalHeader[0].append(title)
+
+        //Use the upvote list class because its exactly what we need
+        const upvWrap = document.createElement("div")
+        upvWrap.className="upvWrap"
+        modalBody[0].append(upvWrap)
+
+        const upvList = document.createElement("ul")
+        upvWrap.append(upvList)
+        upvList.className="upvList"
+        if (user.following.length===0 ) {
+            //If there are no followed user display an apropriate message
+            const disc = document.createElement("p")
+            disc.textContent="No users to display"
+            disc.style.color="gray"
+            disc.style.paddingLeft ="30px"
+            upvList.append(disc)
+        } else {
+            //Otherwise loop through the followed, fetch the users username based on
+            //The user id and add it to the list
+            for (const users of user.following) {
+                const upvNode = document.createElement("li")
+                const upvText = document.createElement("p")
+
+                const apiURL = localStorage.getItem("apiURL")
+                let options = {
+                    method: "GET",
+                    headers: {
+                        'Content-Type' : 'application/JSON',
+                        "Authorization" : "Token " + localStorage.getItem("Token")
+                    }
+                }
+                fetch(`${apiURL}/user/?id=${users}`, options)
+                    .then(r => r.json())
+                    .then(r => {
+                        upvText.textContent=r.username
+                    })
+                
+                upvNode.append(upvText)
+                upvList.append(upvNode)
+            }
+        }
+
+    })
     const posts = document.createElement("p")
     posts.textContent = "Posts: " + user.posts.length
     const upvotes = document.createElement("p")
@@ -340,7 +396,34 @@ async function usrFeedBuild(items) {
     //Create the upvote image and counter and set them based on their values
     const upvoteImage = document.createElement("input")
     upvoteImage.type="image"
-    upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+    
+    //Set the upvote image based on whether the logged in user has upvoted it
+    if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+        const upvoteImage = document.createElement("input")
+        upvoteImage.type="image"
+        upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+    } else {
+        const apiURL = localStorage.getItem("apiURL")
+        const userID = localStorage.getItem("userID")
+        let postID=items.id
+        let options = {
+            method: "GET",
+            headers: {
+                'Content-Type' : 'application/JSON',
+                "Authorization" : "Token " + localStorage.getItem("Token")
+            }
+        }
+        fetch(`${apiURL}/post/?id=${postID}`, options)
+            .then(r => r.json())
+            .then(r => {
+                if (r.meta.upvotes.includes(parseInt(userID))) {
+                    upvoteImage.setAttribute("src", "images/upvotePressed.png")
+                } else {
+                    upvoteImage.setAttribute("src", "images/upvoteDefault.png")
+                }
+            })
+    }
+
     const upvoteCount = document.createElement("a")
     upvoteCount.className="upvoteCount"
     upvoteCount.textContent=items.meta.upvotes.length
