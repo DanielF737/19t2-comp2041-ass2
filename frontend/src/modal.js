@@ -1,4 +1,5 @@
 function buildModal() {
+    //Create all the base elements of the modal
     const modal = document.getElementById("myModal")
 
     const modalContent = document.createElement("div")
@@ -48,7 +49,7 @@ function buildModal() {
 
 function clearModal() {
     const modal = document.getElementById("myModal")
-    
+    //Loop through all the modals children and delete them
     const children = modal.children
     while(children.length > 0){
         children[0].parentNode.removeChild(children[0]);
@@ -58,16 +59,19 @@ function clearModal() {
 }
 
 function openModal() {
+    //Show the modal
     const modal = document.getElementById("myModal")
     modal.style.display = "block"
 }
 
 function closeModal() {
+    //Hide the modal
     const modal = document.getElementById("myModal")
     modal.style.display = "none"
 }
 
 function buildPostModal() {
+    //Create all the base elements of the modal
     const modal = document.getElementById("myBottomModal")
 
     const modalContent = document.createElement("div")
@@ -105,7 +109,7 @@ function buildPostModal() {
 
 function clearBottomModal() {
     const modal = document.getElementById("myBottomModal")
-    
+    //Clear all the children of the modal then rebuild it
     const children = modal.children
     while(children.length > 0){
         children[0].parentNode.removeChild(children[0]);
@@ -115,12 +119,14 @@ function clearBottomModal() {
 }
 
 function openBottomModal() {
+    //Show the bottom modal
     buildPostModal()
     const modal = document.getElementById("myBottomModal")
     modal.style.display="block";
 }
 
 function closeBottomModal() {
+    //Hide the bottom modal
     const modal = document.getElementById("myBottomModal")
     modal.style.display="none";
 }

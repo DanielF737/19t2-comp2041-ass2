@@ -3,6 +3,7 @@ import {buildPostModal, clearBottomModal, closeBottomModal} from "./modal.js"
 function showPostForm() {
     clearBottomModal()
     buildPostModal()
+    //Build the new post form
     const modalHeader = document.getElementsByClassName("bottom-modal-header")
     const modalBody = document.getElementsByClassName("bottom-modal-body")
     const modalFooter = document.getElementsByClassName("bottom-modal-footer")
@@ -62,6 +63,7 @@ function showPostForm() {
     submitBtn.className="button button-secondary"
     submitBtn.addEventListener("click", function(e) {
         e.preventDefault()
+        //When the form is submitted try make the post
         tryPost()
     })
 
@@ -74,11 +76,13 @@ function showPostForm() {
 }
 
 async function tryPost() {
+    //Convert the image to a base64 string
     let base64
     if (document.getElementById("postImage").value!="") {
         base64=await toDataURL(document.getElementById("postImage").files[0])
     }
 
+    //Build the request payload
     const data = {
         title : document.getElementById("postTitle").value,
         text : document.getElementById("postText").value,
@@ -86,6 +90,8 @@ async function tryPost() {
         image : base64
     } 
 
+    //If any of the required fields are left blank, exit the funciton and
+    //show the error
     if (data.title===""||data.text===""||data.subseddit==="") {
         const errorTest = document.getElementById("postError")
         errorTest.style.display="block";
@@ -103,13 +109,16 @@ async function tryPost() {
         body: JSON.stringify(data)
 
     }
-
+    //Make the post request
     fetch(`${apiURL}/post`, options)
 
+    //Close the modal
     closeBottomModal()
 }
 
 function toDataURL(file) {
+    //Make a promise to return the base64 string, read the file then return
+    //the string
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.readAsDataURL(file)

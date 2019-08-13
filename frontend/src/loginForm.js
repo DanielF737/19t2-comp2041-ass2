@@ -4,6 +4,7 @@ import {clearModal, closeModal} from "./modal.js"
 
 function ShowLoginForm() {
     clearModal()
+    //Build the login form elements
     const modal = document.getElementById("myModal");
 
     const modalHeader = document.getElementsByClassName("modal-header")
@@ -45,6 +46,7 @@ function ShowLoginForm() {
     const submitBtn = document.createElement("button")
     submitBtn.textContent="Log In"
     submitBtn.className="button button-secondary"
+    //Create an event listener on the submit button to try the login
     submitBtn.addEventListener("click", function(e) {
         e.preventDefault()
         tryLogin()
@@ -55,6 +57,8 @@ function ShowLoginForm() {
     form.append(br)
     form.append(submitBtn)
 
+    //Create the element to open the register form if the user opened
+    //the wrong one
     const newTo = document.createElement("p")
     const text = document.createTextNode("New to Seddit? ")
     const link = document.createElement("a")
@@ -72,7 +76,7 @@ function ShowLoginForm() {
 function ShowRegisterForm() {
     clearModal()
     const modal = document.getElementById("myModal");
-
+    //Build the register form
     const modalHeader = document.getElementsByClassName("modal-header")
     const modalBody = document.getElementsByClassName("modal-body")
     const modalFooter = document.getElementsByClassName("modal-footer")
@@ -119,6 +123,7 @@ function ShowRegisterForm() {
     name.className="textInput"
     name.id="nameUser"
     
+    //Create the event listener to try to submit the register req
     const submitBtn = document.createElement("button")
     submitBtn.textContent="Sign Up"
     submitBtn.className="button button-secondary"
@@ -151,6 +156,8 @@ function ShowRegisterForm() {
 }
 
 function signOut() {
+    //Delete the auth token and the user ID from local storage
+    //then rebuild the page
     localStorage.removeItem("Token")
     localStorage.removeItem("userID")
     rebuildNavBar()
@@ -164,7 +171,7 @@ function tryLogin() {
         username : document.getElementById("uname").value,
         password : document.getElementById("pword").value
     }
-
+    //Grab the data from the login form
     const apiURL = localStorage.getItem("apiURL")
     let options = {
         method: "POST",
@@ -174,16 +181,19 @@ function tryLogin() {
         body: JSON.stringify(data)
 
     }
-
+    //Make the login request
     fetch(`${apiURL}/auth/login`, options)
         .then(r => r.json())
         .then(r => {
             localStorage.setItem("Token", r.token)
             if (localStorage.getItem("Token")==="undefined") {
+                //If the login fails, show the warning and clear the password field
                 const error = document.getElementById("loginError")
                 error.style.display = "block"
                 document.getElementById("pword").value=""
+                localStorage.removeItem("Token")
             } else {
+                //If the login suceeds, save the auth token and rebuild the page
                 saveUserID()
                 closeModal()
                 rebuildNavBar()
@@ -199,7 +209,7 @@ function tryRegister() {
         email : document.getElementById("email").value,
         name : document.getElementById("nameUser").value
     }
-
+    //Read the data from the form
     const apiURL = localStorage.getItem("apiURL")
     let options = {
         method: "POST",
@@ -209,9 +219,10 @@ function tryRegister() {
         body: JSON.stringify(data)
 
     }
-
+    //Make the post request
     fetch(`${apiURL}/auth/signup`, options)
         .then(r => {
+            //If the request fails, show the relevant error message
             if (r.status === 409) {
                 const error = document.getElementById("loginError")
                 error.childNodes[0].textContent="Username taken"
@@ -224,10 +235,13 @@ function tryRegister() {
         .then(r => r.json())
         .then(r => {
             localStorage.setItem("Token", r.token)
+            // additional error check
             if (localStorage.getItem("Token")==="undefined") {
                 const error = document.getElementById("loginError")
                 error.style.display = "block"
+                localStorage.removeItem("Token")
             } else {
+                //If the login suceeds, save the auth token and rebuild the page
                 saveUserID()
                 closeModal()
                 rebuildNavBar()
@@ -245,7 +259,7 @@ function saveUserID() {
             "Authorization" : "Token " + localStorage.getItem("Token")
         }
     }
-    let userID
+    //Fetch the current user, save the user ID to local storage
     fetch(`${apiURL}/user/`, options)
         .then(r => r.json())
         .then(r => {

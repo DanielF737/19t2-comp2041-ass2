@@ -1,5 +1,6 @@
 import {clearModal, openModal, clearBottomModal, openBottomModal, closeBottomModal, closeModal} from "./modal.js"
 import {ShowLoginForm, ShowRegisterForm, signOut} from './loginForm.js'
+import {viewUpvotes, viewComments, postUpvote} from './feed.js'
 
 function buildNavBar() {
     const root = document.getElementById("root")
@@ -84,6 +85,8 @@ function buildNavBar() {
             .then(r => r.json())
             .then(r => {profileLink.textContent=r.username})
 
+        //add an event listener to the profile link in the greeting to view the current
+        //users profile
         profileLink.addEventListener("click", function() {
             const apiURL = localStorage.getItem("apiURL")
             let options = {
@@ -120,22 +123,21 @@ function buildNavBar() {
 }
 
 async function showUserProfile(user) {
+    //Open the correct modal
     clearBottomModal()
     openBottomModal()
     
     const modalHeader = document.getElementsByClassName("bottom-modal-header")
     const modalBody = document.getElementsByClassName("bottom-modal-body")
-    const modalFooter = document.getElementsByClassName("bottom-modal-footer")
     
     const br = document.createElement("br")
-
     const title=document.createElement("h2")
     title.textContent=user.username
     title.style.display="inline"
-    //title.style.paddingTop ="10px"
     modalHeader[0].append(br)
     modalHeader[0].append(title)
 
+    //Create the wrappers for the profile content
     const top = document.createElement("div")
     top.id="top"
     const topLeft = document.createElement("div")
@@ -156,6 +158,8 @@ async function showUserProfile(user) {
     top.append(topMid)
     top.append(topRight)
 
+    //Grab all the information out of the user content and build the
+    //DOM objects
     const name = document.createElement("p")
     name.textContent="Name: " + user.name
     const email = document.createElement("p")
@@ -175,6 +179,7 @@ async function showUserProfile(user) {
     const usrFeed = document.createElement("ul")
     usrFeed.id="usrFeed"
     const followButton = document.createElement("button")
+    //Add an event listener to the button to follow the user 
     followButton.addEventListener("click", function(){followUser(user)})
     followButton.className="button button-secondary"
     followButton.id="followButton"
@@ -183,6 +188,8 @@ async function showUserProfile(user) {
     followButton.style.float="right"
     
     if (user.posts.length > 0) {
+        //If the user has posts, create a feed element in the profile and for
+        //each post of theirs append it to that feed
         localStorage.setItem("Upvotes", 0)
         for (let post of user.posts) {
             const apiURL = localStorage.getItem("apiURL")
@@ -198,11 +205,13 @@ async function showUserProfile(user) {
             .then(r => {
                 let newupvotes=parseInt(localStorage.getItem("Upvotes"))+r.meta.upvotes.length
                 localStorage.setItem("Upvotes", newupvotes)
+                //Increment the upvote counter
                 upvotes.textContent="Upvotes: " + localStorage.getItem("Upvotes")
                 usrFeedBuild(r)
             })
         }
     } else {
+        //Otherwise set the upvote counter to be 0
         upvotes.textContent="Upvotes: 0"
     }
 
@@ -215,10 +224,13 @@ async function showUserProfile(user) {
             "Authorization" : "Token " + localStorage.getItem("Token")
         }
     }
+    //Make an API call to see if the current user is the same as the user
+    //whose profile is being viewed
     fetch(`${apiURL}/user/`, options)
         .then(r => r.json())
         .then(r => {
             if (user.id===r.id) {
+                //If they are the same user, replace the follow button with the edit profile button
                 const editProfile = document.createElement("button")
                 editProfile.id="editProfBtn"
                 editProfile.addEventListener("click", function(){editUserProfile(user)})
@@ -229,6 +241,8 @@ async function showUserProfile(user) {
                 modalHeader[0].append(editProfile)
                 return
             }
+            //Otherwise test to see if the user already follows the user whose profile
+            //is being displayed and update the follow button accordingly
             if (r.following.includes(user.id)) {
                 followButton.className="button button-primary"
                 followButton.textContent="Unfollow"    
@@ -236,7 +250,7 @@ async function showUserProfile(user) {
             modalHeader[0].append(followButton)
         })
     
-    
+    //Append all the elements to their correct wrapper
     topLeft.append(name)
     topLeft.append(email)
     topMid.append(followers)
@@ -257,11 +271,13 @@ function followUser(user) {
             "Authorization" : "Token " + localStorage.getItem("Token")
         }
     }
+    //Grab the id of the current user and test whether they are
+    //already following the target user
     fetch(`${apiURL}/user/`, options)
         .then(r => r.json())
         .then(r => {
             if (r.following.includes(user.id)) {    
-                //Unfollow the user
+                //if they are, unfollow the user
                 options = {
                     method: "PUT",
                     headers: {
@@ -270,7 +286,7 @@ function followUser(user) {
                     }
                 }
                 fetch(`${apiURL}/user/unfollow?username=${user.username}`, options)
-                //Update the button
+                //Update the follow button
                 const followBtn = document.getElementById("followButton")
                 followBtn.className="button button-secondary"
                 followBtn.textContent="Follow" 
@@ -281,7 +297,7 @@ function followUser(user) {
 
                 //Rebuild Feed
             } else {
-                //Follow the user
+                //otherwise follow the user
                 options = {
                     method: "PUT",
                     headers: {
@@ -291,7 +307,7 @@ function followUser(user) {
                 }
                 fetch(`${apiURL}/user/follow?username=${user.username}`, options)
 
-                //Update the button
+                //Update the follow button
                 const followBtn = document.getElementById("followButton")
                 followBtn.className="button button-primary"
                 followBtn.textContent="Unfollow" 
@@ -309,16 +325,19 @@ function followUser(user) {
 
 async function usrFeedBuild(items) {
     const feed = document.getElementById("usrFeed")
+    //Create a post list element
     const post = document.createElement("li")
     post.className="post"
     post.setAttribute("data-id-post", "")
     feed.append(post)
 
+    //Make the upvote div
     const upvote = document.createElement("div")
     upvote.className="vote"
     upvote.setAttribute("data-id-upvotes", "")
     post.append(upvote)
     
+    //Create the upvote image and counter and set them based on their values
     const upvoteImage = document.createElement("input")
     upvoteImage.type="image"
     upvoteImage.setAttribute("src", "images/upvoteDefault.png")
@@ -326,30 +345,30 @@ async function usrFeedBuild(items) {
     upvoteCount.className="upvoteCount"
     upvoteCount.textContent=items.meta.upvotes.length
     upvoteImage.className="upvoteButton"
+    //Set the event listener on the upvote count to open the view upvote form
     upvoteCount.addEventListener("click", function() {
         viewUpvotes(items.id)
     })
-
+    //Set up the mouse enter event listener on the upvote button to change the image
     upvoteImage.addEventListener("mouseenter", function() {
         upvoteImage.src="images/upvoteDown.png"
     })
 
+    //Add an event listener to post an upvote when the button is clicked
     upvoteImage.addEventListener("click", function() {
         postUpvote(items.id, upvoteImage, upvoteCount)
     })
 
     if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+        //Add an event listener to return the upvote image to the correct state when
+        //the mouse stops hovering
+        upvoteImage.addEventListener("mouseleave", function() {upvoteImage.src="images/upvoteDefault.png"})
     } else {
-        let userID = localStorage.getItem("userID")
-        if (items.meta.upvotes.includes(parseInt(userID))) {
-            upvoteImage.setAttribute("src", "images/upvotePressed.png")
-        } else {
-            upvoteImage.setAttribute("src", "images/upvoteDefault.png")
-        }
-        //Check if have upvoted
-    
+        //Check if have upvoted by grabbing the most up to date post data, and then 
+        //set the upvote image to the correct state
         upvoteImage.addEventListener("mouseleave", function() {
             const apiURL = localStorage.getItem("apiURL")
+            const userID = localStorage.getItem("userID")
             let postID=items.id
             let options = {
                 method: "GET",
@@ -370,24 +389,30 @@ async function usrFeedBuild(items) {
         })
 
     }
+    //Append the upvote objects
     upvote.append(upvoteImage)
     upvote.append(upvoteCount)
 
+    //Create the wrapper for where the post content is stored
     const content = document.createElement("div")
     content.className="content"
     post.append(content)
 
+    //Create the header object for the subseddit name and append
     const sub = document.createElement("h3")
     sub.className="sub"
     sub.textContent= "/s/"+items.meta.subseddit
     content.append(sub)
 
+    //Create the header object for the post title and append
     const heading = document.createElement("h4")
     heading.className="post-title alt-text inlineplz"
     heading.setAttribute("data-id-title", "")
     heading.textContent= items.title
     content.append(heading)
 
+    //Create the object for the post author and post date, format the date
+    //correctly and add an event listener to the author name to show the author's profile
     const author = document.createElement("p")
     author.className="post-author inlineplz"
     author.setAttribute("data-id-author", "")
@@ -413,6 +438,7 @@ async function usrFeedBuild(items) {
                     "Authorization" : "Token " + localStorage.getItem("Token")
                 }
             }
+            //Fetch the most up to date version of the user profile to display
             fetch(`${apiURL}/user/?username=${items.meta.author}`, options)
                 .then(r => r.json())
                 .then(r => {
@@ -420,7 +446,7 @@ async function usrFeedBuild(items) {
                 })
         }
     })
-
+    //Format and append the author and time data
     const text1 = document.createTextNode("Posted by ")
     const text2 = document.createTextNode(` at ${hours}:${minutes} on ${day}/${month}/${year}`)
     author.append(text1)
@@ -428,23 +454,52 @@ async function usrFeedBuild(items) {
     author.append(text2)
     content.append(author)
 
+    //Create elements for the post text and append
     const postText = document.createElement("p")
     postText.textContent=items.text
     content.append(postText)
     
+    //If the post has an image, create an image object and add it to the form
+    //followed by a line break for formatting
     if (items.image!=null) {
         const postImage = document.createElement("img")
-        postImage.className="postImage"
+        postImage.className="imagePost"
         postImage.setAttribute("src", "data:image/png;base64," + items.image)
+
+        const lineBr = document.createElement("br")
+
         content.append(postImage)
+        content.append(lineBr)
     }
 
+    //Add a view comments button, update the button text based on the number of comments
+    //on the post, then add an event listener to display the posts comments
     const viewComm = document.createElement("button")
+    viewComm.style.marginTop="10px"
     viewComm.textContent="Comments (" + items.comments.length+")"
     viewComm.className="button button-primary"
     content.append(viewComm)
     viewComm.addEventListener("click", function() {
-        viewComments(items.comments)
+        if (localStorage.getItem("Token") === null || localStorage.getItem("Token")=="undefined") {
+            //If they arent logged in show the login form
+            viewComments(items.comments, items.id, viewComm, items.comments.length)
+            return
+        }
+
+        const apiURL = localStorage.getItem("apiURL")
+        let options = {
+            method: "GET",
+            headers: {
+                'Content-Type' : 'application/JSON',
+                "Authorization" : "Token " + localStorage.getItem("Token")
+            }
+        }
+        //Otherwise grab the most recent comment data and display it
+        fetch(`${apiURL}/post/?id=${items.id}`, options)
+            .then(r => r.json())
+            .then(r => {
+                viewComments(r.comments, r.id, viewComm, items.comments.length)
+            })
     })
 }
 
@@ -466,11 +521,12 @@ function rebuildNavBar() {
 }
 
 function editUserProfile(user) {
-    //Change text fields to inputs
+    //Close the profile modal and open the edit modal
     closeBottomModal()
     clearModal()
     openModal()
 
+    //Build all the elements of the field
     const modalHeader = document.getElementsByClassName("modal-header")
 
     const title=document.createElement("h2")
@@ -504,6 +560,7 @@ function editUserProfile(user) {
     const passLab = document.createElement("label")
     passLab.textContent="Password:\t"
 
+    //Set the current values to be the placeholders for the input fields
     const nameIn = document.createElement("input")
     nameIn.className="textInput profForm"
     nameIn.setAttribute("placeholder", user.name)
@@ -527,14 +584,16 @@ function editUserProfile(user) {
     form.append(br1)
     form.append(btn)
 
+    //Create an event listener on the button to update the profile
     btn.addEventListener("click", function(e) {
         e.preventDefault()
+        //If all the fields are empty, show the error
         if (nameIn.value==="" && emailIn.value==="" && passIn.value===""){
             error.style.display = "block"
             return
         }
         const apiURL = localStorage.getItem("apiURL")
-
+        //Only store in the data object fields that have had data entered
         const data = {}
         if (nameIn.value!="") {data.name=nameIn.value}
         if (emailIn.value!="") {data.email=emailIn.value}
@@ -548,7 +607,7 @@ function editUserProfile(user) {
             },
             body: JSON.stringify(data)
         }
-        console.log(options.body)
+        //Make the request
         fetch(`${apiURL}/user/`, options)
             .then(r => {console.log(r.status)})
             .then(r=> {
@@ -563,6 +622,8 @@ function editUserProfile(user) {
                 }
                 fetch(`${apiURL}/user/`, options)
                     .then(r => r.json())
+                    //Once the request has processed reopen the user profile with the 
+                    //most up to date data
                     .then(r => {showUserProfile(r)})
             })
     })
