@@ -609,7 +609,6 @@ function editUserProfile(user) {
         }
         //Make the request
         fetch(`${apiURL}/user/`, options)
-            .then(r => {console.log(r.status)})
             .then(r=> {
                 closeModal()
 
