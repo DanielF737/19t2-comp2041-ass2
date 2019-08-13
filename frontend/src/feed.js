@@ -263,9 +263,13 @@ async function buildUser(posts) {
         
         if (items.image!=null) {
             const postImage = document.createElement("img")
-            postImage.className="postImage"
+            postImage.className="imagePost"
             postImage.setAttribute("src", "data:image/png;base64," + items.image)
+
+            const lineBr = document.createElement("br")
+
             content.append(postImage)
+            content.append(lineBr)
         }
 
         const viewComm = document.createElement("button")

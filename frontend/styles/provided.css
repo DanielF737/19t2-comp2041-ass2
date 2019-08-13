@@ -363,3 +363,7 @@ footer > * {
   background-color: white;
   border-color: var(--reddit-blue);
 }
+
+.imagePost {
+  max-width: 800px;
+}
