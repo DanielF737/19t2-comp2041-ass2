@@ -47,6 +47,7 @@ function showPostForm() {
     const label = document.createElement("label")
     label.className="button button-primary padd"
     const labText = document.createTextNode("Find image")
+    label.setAttribute("for", "postImage")
     label.append(labText)
 
     const postImage = document.createElement("input")
