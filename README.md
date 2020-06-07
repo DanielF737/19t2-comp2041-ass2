@@ -1,4 +1,4 @@
-##Exported repository of COMP2041 2019 T2 assignment
+## Exported repository of COMP2041 2019 T2 assignment
 
 The code I have written is in /frontend
 The assignment was to use javascript to interact directly with the DOM to create a usable reddit clone integrating with the provided RESTful API
